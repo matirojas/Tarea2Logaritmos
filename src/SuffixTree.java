@@ -2,12 +2,17 @@ import java.io.*;
 
 public class SuffixTree {
     private Node root;
+    private Node actualNode;
+    private String activeEdge;
+    private int activelength;
+
     public SuffixTree(String fileName){
         this.build(this.cleanText(fileName));
     }
 
     public String cleanText(String fileName){
         String cleaned="";
+        
         try {
             BufferedReader br=new BufferedReader(new FileReader(fileName));
             String line=br.readLine();
