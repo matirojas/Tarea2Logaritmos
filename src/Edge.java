@@ -19,4 +19,16 @@ public class Edge {
     public boolean hasLeaf(){
         return nextNode.isLeaf();
     }
+
+    public Node getNextNode(){
+        return nextNode;
+    }
+
+    public boolean checkString(String s){
+        return value.contains(s) &&  value.length() == s.length();
+    }
+
+
+
+
 }

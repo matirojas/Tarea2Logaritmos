@@ -24,18 +24,41 @@ public class Node {
         return this.isLeaf;
     }
 
+    //Siempre lo invoca el root
     public void insert(char character,int i){
         for (Edge edge:
              edges) {
 
-            if edge.hasLeaf() {
-
+            if( edge.hasLeaf()) {
+                edge.addChar(character);
             }
             else{
-
+                edge.getNextNode().insert(character, i);
             }
         }
-
-        edges.add(new Edge(character,i));
     }
+
+    //Check the pattern in the input string if it exists in one of the edges.
+
+    public void checkStringEdges(String s){
+        for (Edge edge: edges){
+
+        }
+
+    }
+
+    //
+
 }
+/**
+ * edges=Node.getEgdes
+ * for edge in edge{
+ *     if edge.isLeaf()
+ *     edge.insert
+ *     else:
+ *
+ * }
+ *
+ *
+ *
+ */
