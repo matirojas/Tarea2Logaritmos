@@ -2,9 +2,9 @@ public class Edge {
     private String value;
     private Node nextNode;
 
-    public Edge(char Character, int i ){
-        this.value = String.valueOf(Character);
-        nextNode=new Node(i);
+    public Edge(String value, Node nextNode){
+        this.value = value;
+        this.nextNode= nextNode;
     }
 
     public void addChar(char nextChar){
@@ -12,8 +12,10 @@ public class Edge {
     }
 
     public String trimValue(int i){
-        String aux = value.substring(i+1);
+        String aux = value.substring(i);
         this.value = value.substring(0,i);
+        System.out.println(aux);
+        System.out.println(this.value);
         return aux;
     }
     public boolean hasLeaf(){
@@ -25,9 +27,19 @@ public class Edge {
     }
 
     public boolean checkString(String s){
-        return value.contains(s) &&  value.length() == s.length();
+        int length = s.length();
+        String subString = value.substring(0,length);
+        return subString.equals(s);
     }
 
+    public int valueLength(){
+        return value.length();
+    }
+
+
+    public void setNextNode(Node newNode){
+        this.nextNode = newNode;
+    }
 
 
 
