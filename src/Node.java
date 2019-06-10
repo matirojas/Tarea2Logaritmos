@@ -12,6 +12,7 @@ public class Node {
         edges=new HashMap<>();
         suffixLink = null;
         this.isRoot = isRoot;
+        this.nodeValue = -1;
     }
 
     public boolean isRoot(){
@@ -48,12 +49,13 @@ public class Node {
 
     }
 
-    public void insertLeaf(Node newLeaf, String s) {
+    public Node insertLeaf(Node newLeaf, String s) {
         //String w = s.substring(0, s.length()-1);
+        Node newNode = this;// TODO this or null. Creo que THIS es el arreglo para el jogojapan
         Edge e = edges.get(s.charAt(0));
         if (e!= null){
             String rest = e.trimValue(s.length()-1);
-            Node newNode = new Node(false);
+            newNode = new Node(false);
             Edge newEdge = new Edge(rest, e.getNextNode());
             newNode.insertEdge(rest.charAt(0), newEdge);
             e.setNextNode(newNode);
@@ -80,21 +82,34 @@ public class Node {
             Edge newEdge = new Edge(s, newLeaf);
             edges.put(s.charAt(0), newEdge);
         }
+        return newNode;
 
         //caso bacan
         //Edge newEdge = new Edge(nodeValue, newLeaf);
         //edges.add(newEdge);
     }
 
-    public int searchString(String s) {
-        int value = -1;
+    /**
+     * Searches if the string s it is contained in one of the edges of the node.
+     * @param s String searched
+     * @return The edge which contains string s. In the case it doesn't exist returns null.
+     */
+    public Edge searchString(String s) {
         Edge e = edges.get(s.charAt(0));
+        if (e!=null){
+            if(e.checkString(s)){
+                return e;
+            }
+        }
+        return null;
+
+        /*
         if(e != null) {
             if (e.checkString(s)) {
                 value = e.valueLength();
             }
         }
-        return value;
+        */
         /*
         for (Edge edge: edges){
             if (edge.checkString(s)){
@@ -104,6 +119,14 @@ public class Node {
         }
         */
 
+    }
+
+    public void setSuffixLink(Node node){
+        this.suffixLink = node;
+    }
+
+    public Node getSuffixLink(){
+        return this.suffixLink;
     }
 
     public void insertEdge(char c, Edge e){
