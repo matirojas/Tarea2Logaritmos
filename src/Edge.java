@@ -28,9 +28,7 @@ public class Edge {
 
     public boolean checkString(String s){
         int length = s.length();
-        if (s.equals("GG")){
-            System.out.println("AAAAAAAAAa");
-        }
+
         if (length > valueLength()){
             String s2 = s.substring(0,valueLength());
             return s2.equals(value);
@@ -52,5 +50,7 @@ public class Edge {
     }
 
 
-
+    public char getCharValue(int i) {
+        return value.charAt(i);
+    }
 }

@@ -51,7 +51,7 @@ public class Node {
 
     public Node insertLeaf(Node newLeaf, String s) {
         //String w = s.substring(0, s.length()-1);
-        Node newNode = null;// TODO this or null. Creo que THIS es el arreglo para el jogojapan
+        Node newNode = this;// TODO this or null. Creo que THIS es el arreglo para el jogojapan
         Edge e = edges.get(s.charAt(0));
         if (e!= null){
             String rest = e.trimValue(s.length()-1);

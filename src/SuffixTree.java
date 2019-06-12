@@ -8,6 +8,7 @@ public class SuffixTree {
     private char activeEdge;
     private int activelength;
     private int remainder;
+    private Node suffixLinkNode = null;
 
     public SuffixTree(String fileName) {
         this.root = new Node(true);
@@ -49,19 +50,94 @@ public class SuffixTree {
         int count = 0;//count for values in the leaf.
         for (int i = 0; i < s.length(); i++) {
             remainder++;
-            activelength++;
-
-
             char c = s.charAt(i);
             root.insertChar(c);
-
-            Node suffixLinkNode = null;
+            suffixLinkNode = null;
+            if(i==6){
+                System.out.println("a");
+            }
             while (remainder != 0) {
 
+                String u = s.substring(count + remainder - activelength-1, count + remainder);//The whole string we want to insert
 
-                String u = s.substring(count + remainder - activelength, count + remainder);//The whole string we want to insert
+
+                Edge currentEdge = activeNode.searchString(u); //returns the edge that contains the string
+                if (currentEdge != null) {
+                    if (currentEdge.valueLength() <= activelength) {
+                            //Observation2
+                            activeNode = currentEdge.getNextNode();
+                            activelength -= currentEdge.valueLength();
+                            activeEdge = '\0';
+                            continue;
+                    }
+                    u = s.substring(count + remainder - activelength-1, count + remainder);
+                    currentEdge = activeNode.searchString(u);
+                    if (currentEdge!=null && currentEdge.getCharValue(activelength) == c) {
+                        //Observation 1
+                        activeEdge = c;
+                        activelength++;
+                        rule2(activeNode);
 
 
+
+
+                        break;
+                    }
+                }
+                Node newLeaf = new Node(false);
+                newLeaf.setNodeValue(count);
+                Node currentNode = activeNode.insertLeaf(newLeaf, u);
+                count++;
+                remainder--;
+                //Rule 2
+                rule2(currentNode);
+                //Rule 3
+                if (activeNode != root) {
+                    if (activeNode.getSuffixLink() != null) {
+                        activeNode = activeNode.getSuffixLink();
+                    } else {
+                        activeNode = root;
+                    }
+                }
+                //End Rule 3
+                //Rule 1
+                else if (activelength > 1) {
+                    activelength--;
+                    activeEdge = s.charAt(count);
+                } else if (activelength == 1) {
+                    activelength--;
+                    activeEdge = '\0';
+                }
+                //End Rule 1
+            }
+        }
+
+    }
+
+    private void printuwu(int i, int remainder, int activelength, String u, int count) {
+        System.out.println("\n-------------------------------------------------------------------------\n");
+        System.out.println("i= "+ i);
+        System.out.println("remainder= " + remainder);
+        System.out.println("activeLength= " + activelength);
+        System.out.println("stringInserted= " + u);
+        System.out.println("count=" + count);
+        root.printear(0);
+
+        System.out.println("Se viene el active node");
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        activeNode.printear(0);
+        System.out.println("\n-------------------------------------------------------------------------");
+
+    }
+
+    public void rule2(Node n){
+        if (suffixLinkNode != null) {
+            suffixLinkNode.setSuffixLink(n);
+        }
+        suffixLinkNode = n;
+    }
+
+    /*
 
                 System.out.println("\n-------------------------------------------------------------------------\n");
                 System.out.println("i= "+ i);
@@ -76,88 +152,6 @@ public class SuffixTree {
                 activeNode.printear(0);
                 System.out.println("\n-------------------------------------------------------------------------");
 
-                Edge currentEdge = activeNode.searchString(u); //returns the edge that contains the string
-
-                if(i==15 && remainder==3 && activelength==1){
-                    System.out.println("aaa");
-                }
-
-
-
-
-                if (currentEdge != null) {
-                    if (currentEdge.valueLength() <= activelength) {
-                        while (currentEdge != null && currentEdge.valueLength() <= activelength) {
-                            //Observation2
-                            //String already exists but is the exact same value of the edge.
-                            //We need to update the activeNode, activeLenght and activeEdge
-                            //creo que aqui va un while, al menos segun la pregunta de stack overflow
-                            activeNode = currentEdge.getNextNode();
-                            activelength -= currentEdge.valueLength();
-                            activeEdge = '\0';
-                            u = s.substring(count + remainder - activelength, count + remainder);
-                            if (u.equals("")) {
-                                currentEdge = null;
-                            } else {
-                                currentEdge = activeNode.searchString(u);
-                            }
-                        }
-                        if (activelength ==0){
-                            break;
-                        }
-                        else if(currentEdge!=null){
-                            break;
-                        }
-                    } else if (activelength == 1) {
-                        //Observation 1
-                        //String already exists and there is no activeEdge defined.
-                        //We need to update the activeLenght and activeEdge
-                        activeEdge = c;
-                        break;
-
-                    } else if (activelength > 1) {
-                        //Observation 1
-                        //String already exists and there is activeEdge already defined.
-                        //We need to update the activeLenght
-                        break;
-                    }
-
-                }
-                Node newLeaf = new Node(false);
-                newLeaf.setNodeValue(count);
-                Node currentNode = activeNode.insertLeaf(newLeaf, u);
-                count++;
-                remainder--;
-
-                //Rule 2
-                if (suffixLinkNode != null) {
-                    suffixLinkNode.setSuffixLink(currentNode);
-                }
-                suffixLinkNode = currentNode;
-                //End Rule 2
-
-
-                //Rule 3
-                if (activeNode != root) {
-                    if (activeNode.getSuffixLink() != null) {
-                        activeNode = activeNode.getSuffixLink();
-                    } else {
-                        activeNode = root;
-                    }
-                }
-                //End Rule 3
-
-                //Rule 1
-                else if (activelength > 1) {
-                    activelength--;
-                    activeEdge = s.charAt(count);
-                } else if (activelength == 1) {
-                    activelength--;
-                    activeEdge = '\0';
-                }
-                //End Rule 1
-            }
-        }
 
         System.out.println("\n-------------------------------------------------------------------------\n");
         System.out.println("remainder= " + remainder);
@@ -169,7 +163,7 @@ public class SuffixTree {
         activeNode.printear(0);
         System.out.println("\n-------------------------------------------------------------------------");
 
-    }
+     */
 
 
     public int count(String s) {
@@ -203,7 +197,7 @@ public class SuffixTree {
 
     public static void main(String[] args) {
         SuffixTree st = new SuffixTree("owo");
-        String uwu = "GATCAATGAGGTGGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+        String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCTAAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCAAGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAGCTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGATTTGATCATTATGCATTATATACATGAATCAAAATATCACACATACCTTCAAACTATGTACAAATATTATATACCAATAAAAAATCATCATCATCATCTCCATCATCACCACCCTCCTCCTCATCACCACCAGCATCACCACCATCATCACCACCACCATCATCACCACCACCACTGCCATCATCATCACCACCACTGTGCCATCATCATCACCACCACTGTCATTATCACCACCACCATCATCACCAACACCACTGCCATCGTCATCACCACCACTGTCATTATCACCACCACCATCACCAACATCACCACCACCATTATCACCACCATCAACACCACCACCCCCATCATCATCATCACTACTACCATCATTACCAGCACCACCACCACTATCACCACCACCACCACAATCACCATCACCACTATCATCAACATCATCACTACCACCATCACCAACACCACCATCATTATCACCACCACCACCATCACCAACATCACCACCATCATCATCACCACCATCACCAAGACCATCATCATCACCATCACCACCAACATCACCACCATCACCAACACCACCATCACCACCACCACCACCATCATCACCACCACCACCATCATCATCACCACCACCGCCATCATCATCGCCACCACCATGACCACCACCATCACAACCATCACCACCATCACAACCACCATCATCACTATCGCTATCACCACCATCACCATTACCACCACCATTACTACAACCATGACCATCACCACCATCACCACCACCATCACAACGATCACCATCACAGCCACCATCATCACCACCACCACCACCACCATCACCATCAAACCATCGGCATTATTATTTTTTTAGAATTTTGTTGGGATTCAGTATCTGCCAAGATACCCATTCTTAAAACATGAAAAAGCAGCTGACCCTCCTGTGGCCCCCTTTTTGGGCAGTCATTGCAGGACCTCATCCCCAAGCAGCAGCTCTGGTGGCATACAGGCAACCCACCACCAAGGTAGAGGGTAATTGAGCAGAAAAGCCACTTCCTCCAGCAGTTCCCTGTCTGAGCTGCTGTCCTTGGACTTGAAGAAGCTTCTGGAACATGCTGGGGAGGAAGGAAGACATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCTATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAACATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
         st.insert(uwu); //aguagualagua$
         int count = st.count("A");
         System.out.println(count);
