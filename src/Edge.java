@@ -28,6 +28,13 @@ public class Edge {
 
     public boolean checkString(String s){
         int length = s.length();
+        if (s.equals("GG")){
+            System.out.println("AAAAAAAAAa");
+        }
+        if (length > valueLength()){
+            String s2 = s.substring(0,valueLength());
+            return s2.equals(value);
+        }
         String subString = value.substring(0,length);
         return subString.equals(s);
     }
@@ -39,6 +46,9 @@ public class Edge {
 
     public void setNextNode(Node newNode){
         this.nextNode = newNode;
+    }
+    public String getValue(){
+        return value;
     }
 
 

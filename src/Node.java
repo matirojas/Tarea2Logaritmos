@@ -51,7 +51,7 @@ public class Node {
 
     public Node insertLeaf(Node newLeaf, String s) {
         //String w = s.substring(0, s.length()-1);
-        Node newNode = this;// TODO this or null. Creo que THIS es el arreglo para el jogojapan
+        Node newNode = null;// TODO this or null. Creo que THIS es el arreglo para el jogojapan
         Edge e = edges.get(s.charAt(0));
         if (e!= null){
             String rest = e.trimValue(s.length()-1);
@@ -132,6 +132,48 @@ public class Node {
     public void insertEdge(char c, Edge e){
         edges.put(c, e);
     }
+
+    public Edge getEdge(char charAt) {
+        return edges.get(charAt);
+    }
+
+    public ArrayList<Node> getAllLeafs() {
+        Collection<Edge> edgesList = edges.values();
+        ArrayList<Node> nodes = new ArrayList<>();
+        for (Edge edge: edgesList) {
+            if( edge.hasLeaf()) {
+                nodes.add(edge.getNextNode());
+            }
+            else{
+                nodes.addAll(edge.getNextNode().getAllLeafs());
+            }
+        }
+        return nodes;
+    }
+    public void printear(int level){
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<level; i++){
+            sb.append("\t\t");
+        }
+        for (Edge edge :
+                edges.values()) {
+            if (edge.getNextNode().isLeaf()){
+                System.out.println(sb.toString() + "----"+ edge.getValue() + "----" + edge.getNextNode().getNodeValue());
+            }
+            else {
+                System.out.println(sb.toString() + "----" + edge.getValue() + "----");
+            }
+            edge.getNextNode().printear(level+1);
+        }
+
+    }
+
+    public int getNodeValue(){
+        return nodeValue;
+    }
+
+
+
 
 
     //
