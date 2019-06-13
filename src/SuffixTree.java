@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -173,20 +174,51 @@ public class SuffixTree {
             Edge e = currentNode.getEdge(s.charAt(i));
             if (e == null) {
                 return 0;
-            }
-            if (i + e.valueLength() > s.length()) {
-                return 0;
-            }
-            String substring = s.substring(i, i + e.valueLength());
-            if (e.checkString(substring)) {
-                i += e.valueLength();
-                currentNode = e.getNextNode();
             } else {
-                return 0;
+                String substring = e.getValue();
+                if (substring.contains(s.substring(i))) {
+                    return e.getNextNode().getAllLeafs().size();
+                } else {
+                    i += substring.length();
+                    currentNode = e.getNextNode();
+                }
+
             }
         }
-        return currentNode.getAllLeafs().size();
+        return 0;
     }
+    public ArrayList<Integer> locate(String s){
+        int i = 0;
+        Node currentNode = root;
+        ArrayList<Integer> lista=new ArrayList<>();
+        while (i < s.length()) {
+            Edge e = currentNode.getEdge(s.charAt(i));
+            if (e == null) {
+                break;
+            } else {
+                String substring = e.getValue();
+                if (substring.contains(s.substring(i))) {
+                    ArrayList<Node> leafs= e.getNextNode().getAllLeafs();
+                    for (Node leaf :
+                            leafs) {
+                        lista.add(leaf.getNodeValue());
+
+                    }
+                    break;
+                } else {
+                    i += substring.length();
+                    currentNode = e.getNextNode();
+                }
+
+            }
+        }
+        return lista;
+
+    }
+
+
+
+
 
 
     public Node getRoot(){
@@ -197,10 +229,16 @@ public class SuffixTree {
 
     public static void main(String[] args) {
         SuffixTree st = new SuffixTree("owo");
-        String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCTAAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCAAGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAGCTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGATTTGATCATTATGCATTATATACATGAATCAAAATATCACACATACCTTCAAACTATGTACAAATATTATATACCAATAAAAAATCATCATCATCATCTCCATCATCACCACCCTCCTCCTCATCACCACCAGCATCACCACCATCATCACCACCACCATCATCACCACCACCACTGCCATCATCATCACCACCACTGTGCCATCATCATCACCACCACTGTCATTATCACCACCACCATCATCACCAACACCACTGCCATCGTCATCACCACCACTGTCATTATCACCACCACCATCACCAACATCACCACCACCATTATCACCACCATCAACACCACCACCCCCATCATCATCATCACTACTACCATCATTACCAGCACCACCACCACTATCACCACCACCACCACAATCACCATCACCACTATCATCAACATCATCACTACCACCATCACCAACACCACCATCATTATCACCACCACCACCATCACCAACATCACCACCATCATCATCACCACCATCACCAAGACCATCATCATCACCATCACCACCAACATCACCACCATCACCAACACCACCATCACCACCACCACCACCATCATCACCACCACCACCATCATCATCACCACCACCGCCATCATCATCGCCACCACCATGACCACCACCATCACAACCATCACCACCATCACAACCACCATCATCACTATCGCTATCACCACCATCACCATTACCACCACCATTACTACAACCATGACCATCACCACCATCACCACCACCATCACAACGATCACCATCACAGCCACCATCATCACCACCACCACCACCACCATCACCATCAAACCATCGGCATTATTATTTTTTTAGAATTTTGTTGGGATTCAGTATCTGCCAAGATACCCATTCTTAAAACATGAAAAAGCAGCTGACCCTCCTGTGGCCCCCTTTTTGGGCAGTCATTGCAGGACCTCATCCCCAAGCAGCAGCTCTGGTGGCATACAGGCAACCCACCACCAAGGTAGAGGGTAATTGAGCAGAAAAGCCACTTCCTCCAGCAGTTCCCTGTCTGAGCTGCTGTCCTTGGACTTGAAGAAGCTTCTGGAACATGCTGGGGAGGAAGGAAGACATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCTATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAACATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+        String uwu = "cdddcdcd$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
         st.insert(uwu); //aguagualagua$
-        int count = st.count("A");
-        System.out.println(count);
+        ArrayList<Integer> count = st.locate("c");
+        st.root.printear(0);
+        count.sort(Integer::compareTo);
+        for (Integer i :
+                count) {
+            System.out.println(i);
+        }
+        System.out.println(count.size());
         //st.getRoot().printear(0);
 
         /*

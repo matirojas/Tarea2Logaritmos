@@ -139,7 +139,12 @@ public class Node {
 
     public ArrayList<Node> getAllLeafs() {
         Collection<Edge> edgesList = edges.values();
+
         ArrayList<Node> nodes = new ArrayList<>();
+        if(this.isLeaf()){
+            nodes.add(this);
+            return nodes;
+        }
         for (Edge edge: edgesList) {
             if( edge.hasLeaf()) {
                 nodes.add(edge.getNextNode());
@@ -148,6 +153,7 @@ public class Node {
                 nodes.addAll(edge.getNextNode().getAllLeafs());
             }
         }
+
         return nodes;
     }
     public void printear(int level){
