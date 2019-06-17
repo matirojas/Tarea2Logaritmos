@@ -1,7 +1,8 @@
+import javafx.util.Pair;
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class SuffixTree {
     private Node root;
@@ -216,9 +217,81 @@ public class SuffixTree {
 
     }
 
+    //Retorna la lista con los k strings de largo q que ocurren más veces en
+    //T [1, n].
+    // q = largo del string
+    public ArrayList<String> topKQ(int k, int q){
+        int count = 0;
+        ArrayList<Pair<String, Node>> founded = new ArrayList<>();
+        String actualString = "";
+
+        Stack<Pair<Node,String>> stack=new Stack<>();
+        stack.push(new Pair(root,""));
+        while(!stack.empty()){
+            Pair<Node,String> currentPair= stack.pop();
+            Node node=currentPair.getKey();
+            String partialString=currentPair.getValue();
+            Collection<Edge> edges = node.getEdges();
+            /*
+            if(partialString.length()>=q){
+                founded.add(new Pair(partialString , node));
+                continue;
+            }
+            */
+            for (Edge edge:edges) {
+
+                String completed=edge.getValue().contains("$")?edge.getValue().substring(0,edge.valueLength()-1):edge.getValue();
+                if (partialString.length()+completed.length()>=q){
+                    founded.add(new Pair(partialString + completed.substring(0, q - partialString.length()), edge.getNextNode()));
+                }
+                else if(!edge.getNextNode().isLeaf()){
+                    stack.push(new Pair(edge.getNextNode(),partialString+edge.getValue()));
+                }
+
+            }
+        }
+
+        PriorityQueue<Pair<String, Integer>> topK = new PriorityQueue<>(new Comparator<Pair<String, Integer>>() {
+            @Override
+            public int compare(final Pair<String, Integer> o1, final Pair<String, Integer> o2) {
+                // TODO: implement your logic here
 
 
+                return o1.getValue()-o2.getValue();
+            }
+        });
+        int min= Integer.MAX_VALUE;
+        Pair minPair = null;
+        for (Pair<String, Node> pair: founded) {
+            int o = pair.getValue().getAllLeafs().size();
+            if (topK.size() >= k){
+                if (o > min){
+                    topK.remove(minPair);
+                    Pair newPair = new Pair(pair.getKey(),o);
+                    topK.add(newPair);
+                    min = topK.peek().getValue();
+                    minPair =topK.peek();
+                }
+            }
+            else{
+                Pair newPair = new Pair(pair.getKey(),o);
+                topK.add(newPair);
+                if (o< min){
+                    min = o;
+                    minPair = newPair;
+                }
+            }
+        }
 
+        ArrayList<String> result = new ArrayList<>();
+        for (Pair<String, Integer> pairSi :
+                topK
+             ) {
+            result.add(pairSi.getKey());
+        }
+
+        return result;
+    }
 
 
     public Node getRoot(){
@@ -229,7 +302,7 @@ public class SuffixTree {
 
     public static void main(String[] args) {
         SuffixTree st = new SuffixTree("owo");
-        String uwu = "cdddcdcd$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+        String uwu = "GATCAATGAGGTGGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
         st.insert(uwu); //aguagualagua$
         ArrayList<Integer> count = st.locate("c");
         st.root.printear(0);
@@ -239,6 +312,11 @@ public class SuffixTree {
             System.out.println(i);
         }
         System.out.println(count.size());
+        ArrayList<String> owaso = st.topKQ(1,2);
+        for (String s :
+                owaso) {
+            System.out.println(s);
+        }
         //st.getRoot().printear(0);
 
         /*
@@ -250,10 +328,6 @@ public class SuffixTree {
     }
 
 
-    // Nos falta
-    // Hacer los cambios de active point y cosas
-    // Regla2 y Regla 3.
-    //A priori
 
 }
 

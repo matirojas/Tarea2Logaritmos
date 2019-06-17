@@ -178,10 +178,11 @@ public class Node {
         return nodeValue;
     }
 
+    public Collection<Edge> getEdges(){
+        return edges.values();
+    }
 
-
-
-
+    
     //
 
 }

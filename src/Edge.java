@@ -53,4 +53,5 @@ public class Edge {
     public char getCharValue(int i) {
         return value.charAt(i);
     }
+
 }
