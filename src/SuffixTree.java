@@ -300,11 +300,30 @@ public class SuffixTree {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         SuffixTree st = new SuffixTree("owo");
-        String uwu = "GATCAATGAGGTGGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
-        st.insert(uwu); //aguagualagua$
-        ArrayList<Integer> count = st.locate("c");
+        /*String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCT" +
+                "AAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCA" +
+                "AGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAG" +
+                "CTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGAT" +
+                "TTGATCATTATGCATTATATACATGAATCAAAATATCACACATACCTTCAAACTATGTACAAATATTATATACCAATAAA" +
+                "AAATCATCATCATCATCTCCATCATCACCACCCTCCTCCTCATCACCACCAGCATCACCACCATCATCACCACCACCATC" +
+                "ATCACCACCACCACTGCCATCATCATCACCACCACTGTGCCATCATCATCACCACCACTGTCATTATCACCACCACCATC" +
+                "ATCACCAACACCACTGCCATCGTCATCACCACCACTGTCATTATCACCACCACCATCACCAACATCACCACCACCATTAT" +
+                "CACCACCATCAACACCACCACCCCCATCATCATCATCACTACTACCATCATTACCAGCACCACCACCACTATCACCACCA" +
+                "CCACCACAATCACCATCACCACTATCATCAACATCATCACTACCACCATCACCAACACCACCATCATTATCACCACCACC" +
+                "ACCATCACCAACATCACCACCATCATCATCACCACCATCACCAAGACCATCATCATCACCATCACCACCAACATCACCAC" +
+                "CATCACCAACACCACCATCACCACCACCACCACCATCATCACCACCACCACCATCATCATCACCACCACCGCCATCATCA" +
+                "TCGCCACCACCATGACCACCACCATCACAACCATCACCACCATCACAACCACCATCATCACTATCGCTATCACCACCATC" +
+                "ACCATTACCACCACCATTACTACAACCATGACCATCACCACCATCACCACCACCATCACAACGATCACCATCACAGCCAC" +
+                "CATCATCACCACCACCACCACCACCATCACCATCAAACCATCGGCATTATTATTTTTTTAGAATTTTGTTGGGATTCAGT" +
+                "ATCTGCCAAGATACCCATTCTTAAAACATGAAAAAGCAGCTGACCCTCCTGTGGCCCCCTTTTTGGGCAGTCATTGCAGG" +
+                "ACCTCATCCCCAAGCAGCAGCTCTGGTGGCATACAGGCAACCCACCACCAAGGTAGAGGGTAATTGAGCAGAAAAGCCAC" +
+                "TTCCTCCAGCAGTTCCCTGTCTGAGCTGCTGTCCTTGGACTTGAAGAAGCTTCTGGAACATGCTGGGGAGGAAGGAAGAC" +
+                "ATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCT" +
+                "ATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAAC" +
+                "ATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+        ArrayList<Integer> count = st.locate("C");
         st.root.printear(0);
         count.sort(Integer::compareTo);
         for (Integer i :
@@ -312,11 +331,34 @@ public class SuffixTree {
             System.out.println(i);
         }
         System.out.println(count.size());
-        ArrayList<String> owaso = st.topKQ(1,2);
+        ArrayList<String> owaso = st.topKQ(1,1);
         for (String s :
                 owaso) {
             System.out.println(s);
         }
+        */
+
+        /*
+        String archivo="";
+        BufferedReader bf=new BufferedReader(new FileReader("/home/emilio/2019-1/dna.50MB"));
+        String line=bf.readLine();
+        while(line!=null){
+            archivo+=line;
+            line=bf.readLine();
+        }
+        */
+
+        StringBuilder archivo = new StringBuilder();
+        BufferedReader bf=new BufferedReader(new FileReader("/home/emilio/2019-1/dna.50MB"));
+        String line=bf.readLine();
+        while(line!=null){
+            archivo.append(line);
+            line=bf.readLine();
+        }
+        archivo.append("$");
+        String nosdfn = archivo.toString();
+        st.insert(nosdfn);
+
         //st.getRoot().printear(0);
 
         /*
