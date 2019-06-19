@@ -41,13 +41,6 @@ public class SuffixTree {
         }
     }
 
-    /*
-    private void insertChar(char substring,int i) {
-
-        root.insertChar(substring,i);
-
-    }
-    */
     private void insert(String s) {
         int count = 0;//count for values in the leaf.
         for (int i = 0; i < s.length(); i++) {
@@ -55,14 +48,8 @@ public class SuffixTree {
             char c = s.charAt(i);
             root.insertChar(c);
             suffixLinkNode = null;
-            if(i==6){
-                System.out.println("a");
-            }
             while (remainder != 0) {
-
                 String u = s.substring(count + remainder - activelength-1, count + remainder);//The whole string we want to insert
-
-
                 Edge currentEdge = activeNode.searchString(u); //returns the edge that contains the string
                 if (currentEdge != null) {
                     if (currentEdge.valueLength() <= activelength) {
@@ -79,10 +66,6 @@ public class SuffixTree {
                         activeEdge = c;
                         activelength++;
                         rule2(activeNode);
-
-
-
-
                         break;
                     }
                 }
@@ -113,10 +96,9 @@ public class SuffixTree {
                 //End Rule 1
             }
         }
-
     }
 
-    private void printuwu(int i, int remainder, int activelength, String u, int count) {
+    /*private void printSuffixTree(int i, int remainder, int activelength, String u, int count) {
         System.out.println("\n-------------------------------------------------------------------------\n");
         System.out.println("i= "+ i);
         System.out.println("remainder= " + remainder);
@@ -124,13 +106,8 @@ public class SuffixTree {
         System.out.println("stringInserted= " + u);
         System.out.println("count=" + count);
         root.printear(0);
-
-        System.out.println("Se viene el active node");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        activeNode.printear(0);
-        System.out.println("\n-------------------------------------------------------------------------");
-
     }
+    */
 
     public void rule2(Node n){
         if (suffixLinkNode != null) {
@@ -138,35 +115,6 @@ public class SuffixTree {
         }
         suffixLinkNode = n;
     }
-
-    /*
-
-                System.out.println("\n-------------------------------------------------------------------------\n");
-                System.out.println("i= "+ i);
-                System.out.println("remainder= " + remainder);
-                System.out.println("activeLength= " + activelength);
-                System.out.println("stringInserted= " + u);
-                System.out.println("count=" + count);
-                root.printear(0);
-
-                System.out.println("Se viene el active node");
-                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-                activeNode.printear(0);
-                System.out.println("\n-------------------------------------------------------------------------");
-
-
-        System.out.println("\n-------------------------------------------------------------------------\n");
-        System.out.println("remainder= " + remainder);
-        System.out.println("activeLength= " + activelength);
-        root.printear(0);
-
-        System.out.println("Se viene el active node");
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        activeNode.printear(0);
-        System.out.println("\n-------------------------------------------------------------------------");
-
-     */
-
 
     public int count(String s) {
         int i = 0;
@@ -214,82 +162,47 @@ public class SuffixTree {
             }
         }
         return lista;
-
     }
 
     //Retorna la lista con los k strings de largo q que ocurren más veces en
     //T [1, n].
     // q = largo del string
     public ArrayList<String> topKQ(int k, int q){
-        int count = 0;
-        ArrayList<Pair<String, Node>> founded = new ArrayList<>();
-        String actualString = "";
 
         Stack<Pair<Node,String>> stack=new Stack<>();
         stack.push(new Pair(root,""));
+        PriorityQueue<Pair<String, Integer>> topK = new PriorityQueue<>(new Comparator<Pair<String, Integer>>() {
+            @Override
+            public int compare(final Pair<String, Integer> o1, final Pair<String, Integer> o2) {
+                return o1.getValue()-o2.getValue();
+            }
+        });
+
         while(!stack.empty()){
             Pair<Node,String> currentPair= stack.pop();
             Node node=currentPair.getKey();
             String partialString=currentPair.getValue();
             Collection<Edge> edges = node.getEdges();
-            /*
-            if(partialString.length()>=q){
-                founded.add(new Pair(partialString , node));
-                continue;
-            }
-            */
             for (Edge edge:edges) {
 
                 String completed=edge.getValue().contains("$")?edge.getValue().substring(0,edge.valueLength()-1):edge.getValue();
                 if (partialString.length()+completed.length()>=q){
-                    founded.add(new Pair(partialString + completed.substring(0, q - partialString.length()), edge.getNextNode()));
+                    topK.add(new Pair(partialString + completed.substring(0, q - partialString.length()), edge.getNextNode().getAllLeafs().size()));
                 }
                 else if(!edge.getNextNode().isLeaf()){
                     stack.push(new Pair(edge.getNextNode(),partialString+edge.getValue()));
                 }
-
             }
         }
-
-        PriorityQueue<Pair<String, Integer>> topK = new PriorityQueue<>(new Comparator<Pair<String, Integer>>() {
-            @Override
-            public int compare(final Pair<String, Integer> o1, final Pair<String, Integer> o2) {
-                // TODO: implement your logic here
-
-
-                return o1.getValue()-o2.getValue();
-            }
-        });
-        int min= Integer.MAX_VALUE;
-        Pair minPair = null;
-        for (Pair<String, Node> pair: founded) {
-            int o = pair.getValue().getAllLeafs().size();
-            if (topK.size() >= k){
-                if (o > min){
-                    topK.remove(minPair);
-                    Pair newPair = new Pair(pair.getKey(),o);
-                    topK.add(newPair);
-                    min = topK.peek().getValue();
-                    minPair =topK.peek();
-                }
-            }
-            else{
-                Pair newPair = new Pair(pair.getKey(),o);
-                topK.add(newPair);
-                if (o< min){
-                    min = o;
-                    minPair = newPair;
-                }
-            }
+        while(topK.size() > k){
+            topK.remove();
         }
-
         ArrayList<String> result = new ArrayList<>();
         for (Pair<String, Integer> pairSi :
                 topK
              ) {
             result.add(pairSi.getKey());
         }
-
         return result;
     }
 
@@ -298,11 +211,10 @@ public class SuffixTree {
         return root;
     }
 
-
-
     public static void main(String[] args) throws IOException {
         SuffixTree st = new SuffixTree("owo");
-        /*String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCT" +
+        /*
+        String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCT" +
                 "AAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCA" +
                 "AGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAG" +
                 "CTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGAT" +
@@ -323,52 +235,48 @@ public class SuffixTree {
                 "ATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCT" +
                 "ATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAAC" +
                 "ATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
-        ArrayList<Integer> count = st.locate("C");
-        st.root.printear(0);
+        st.insert(uwu);
+        ArrayList<Integer> count = st.locate("AC");
+        //st.root.printear(0);
         count.sort(Integer::compareTo);
         for (Integer i :
                 count) {
             System.out.println(i);
         }
         System.out.println(count.size());
-        ArrayList<String> owaso = st.topKQ(1,1);
+        ArrayList<String> owaso = st.topKQ(4,4);
         for (String s :
                 owaso) {
             System.out.println(s);
         }
         */
 
-        /*
-        String archivo="";
-        BufferedReader bf=new BufferedReader(new FileReader("/home/emilio/2019-1/dna.50MB"));
-        String line=bf.readLine();
-        while(line!=null){
-            archivo+=line;
-            line=bf.readLine();
-        }
-        */
 
         StringBuilder archivo = new StringBuilder();
         BufferedReader bf=new BufferedReader(new FileReader("/home/emilio/2019-1/dna.50MB"));
         String line=bf.readLine();
+        //Textito
         while(line!=null){
             archivo.append(line);
+
             line=bf.readLine();
         }
         archivo.append("$");
         String nosdfn = archivo.toString();
+        line.toLowerCase();
+        line.replaceAll(".", "");//TODO signo de puntuacion
+        line.replaceAll(",", "");//TODO espacios
+        line.replaceAll("\n", " ");//TODO espacios
+        line.replaceAll("\\s{2,}", " ");
+
+
         st.insert(nosdfn);
 
-        //st.getRoot().printear(0);
 
-        /*
-        String a = "uwu";
-        String b = a.substring(1,1);
-        System.out.println(b);
-        System.out.println("uwu");
-        */
+
+
+
     }
-
 
 
 }
