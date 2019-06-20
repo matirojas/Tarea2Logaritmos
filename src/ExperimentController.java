@@ -63,16 +63,16 @@ public class ExperimentController {
         } else {
             this.englishTextCleaner(path);
         }
-        double timeI = System.currentTimeMillis();
+        double timeI = System.nanoTime();
 
         st.insert(wholeString.substring(0, n) + "$");
-        double timeE = System.currentTimeMillis();
+        double timeE = System.nanoTime();
         double time = timeE - timeI;
         return time;
 
     }
 
-    public Pair<Double,Double> ADNExperiment(int n, int m,boolean fail) {
+    public Pair<Double,Double> subExperiment(int n, int m, boolean fail) {
         double locate=0.0;
         double count=0.0;
         String[] stringGenerados=new String[n/10];
@@ -102,44 +102,50 @@ public class ExperimentController {
         return new Pair<>(locate,count);
 
     }
-
-    public double locateEnglishExperiment(int n) {
-        double timeI = System.currentTimeMillis();
-        for (int i = 0; i < n / 10; i++) {
-            int indice = new Random().nextInt(n - 10);
-            String sub = wholeString.substring(indice, indice + 10);
-            st.locate(sub);
+    public double topkqExperiment(int k,int q){
+        double timeI = System.nanoTime();
+        st.topKQ(k,q);
+        double timeE = System.nanoTime();
+        return (timeE-timeI);
 
 
-        }
-        double timeE = System.currentTimeMillis();
-        double time = timeE - timeI;
-        return time;
 
     }
 
-    public void AdnExperiment(String pathText,String stringWrite) throws IOException {
-        int[] m = new int[]{8, 16, 32, 64};
+
+    public void Experiment(String pathText, String stringWrite, int r, int w,int[] m,boolean isDNA) throws IOException {
+
+        int[] ks=new int[]{3,5,10};
+        int[] qs;
+        if(isDNA){
+            qs=new int[]{4,8,16,32};
+        }
+        else{
+            qs=new int[]{4,5,6,7};
+        }
         ArrayList<Double> setupList=new ArrayList<>();
         ArrayList<Double> locateList=new ArrayList<>();
         ArrayList<Double> CountList=new ArrayList<>();
         ArrayList<Double> missCount=new ArrayList<>();
         ArrayList<Double> missLocate=new ArrayList<>();
-        FileWriter setup = new FileWriter(stringWrite);
-        for (int i = 10; i <12; i++) {
-            double n = Math.pow(2, i);
-            double timeSetup = this.setST(pathText, true, (int) n);
-            setupList.add(timeSetup);
+        ArrayList<Double> topList=new ArrayList<>();
 
+        FileWriter setup = new FileWriter(stringWrite);
+        for (int i = r; i <w; i++) {
+            double n = Math.pow(2, i);
+            double timeSetup = this.setST(pathText, isDNA, (int) n);
+            setupList.add(timeSetup);
+            System.out.println("creo el arbol");
             for (int j :
                     m) {
-                Pair<Double,Double> time = ADNExperiment((int) n, j,false);
+                System.out.println("loop++");
+                Pair<Double,Double> time = subExperiment((int) n, j,false);
                 Double timeLocate=time.getKey();
                 Double timeCount=time.getValue();
 
                 locateList.add(timeLocate);
                 CountList.add(timeCount);
-                time = ADNExperiment((int) n, j,true);
+                time = subExperiment((int) n, j,true);
                 missLocate.add(time.getKey());
                 missCount.add(time.getValue());
             }
@@ -162,8 +168,19 @@ public class ExperimentController {
             CountList=new ArrayList<>();
             missCount=new ArrayList<>();
             missLocate=new ArrayList<>();
+            for (int k :
+                    ks) {
+                setup.write("Para k = "+k+":\n");
+                for (int q :
+                        qs) {
+                    topList.add(this.topkqExperiment(k,q));
 
 
+                }
+                setup.write(topList.toString()+"\n");
+
+                topList=new ArrayList<>();
+            }
 
         }
         setup.write("tiempos de construccion: "+setupList.toString());
@@ -172,24 +189,16 @@ public class ExperimentController {
 
     }
 
-    public void EnglishExperiment(String path) throws IOException {
-        FileWriter setup = new FileWriter("D:\\dcc\\2019-1\\loga\\english.txt");//TODO cambiar el filename
-
-        for (int i = 10; i < 24; i++) {
-            double n = Math.pow(2, i);
-            double timeSetup = this.setST(path, true, (int) n);
-            double timeLocate = locateEnglishExperiment((int) n);
-            setup.write("tiempo de setup" + Double.toString(n) + ":" + Double.toString(timeSetup));
-            setup.write("tiempo de locate" + Double.toString(n) + ":" + Double.toString(timeLocate));
-        }
-        setup.flush();
-
-    }
 
 
     public static void main(String[] args) throws IOException {
         ExperimentController ec=new ExperimentController();
-        ec.AdnExperiment("D:\\dcc\\2019-1\\loga\\datasets\\dna.50MB","D:\\dcc\\2019-1\\loga\\adn.txt");
+        int[] m = new int[]{8, 16, 32, 64};
+        m=new int[]{10};
+        for (int i = 10; i <23 ; i++) {
+            ec.Experiment("D:\\dcc\\2019-1\\loga\\datasets\\dna.50MB","D:\\dcc\\2019-1\\loga\\adn"+i+".txt",i,i+1,m,false);
+
+        }
 
     }
 }
