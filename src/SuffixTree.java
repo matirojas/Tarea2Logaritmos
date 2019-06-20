@@ -4,6 +4,10 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 
+
+/**
+ * Clase que representa un suffix tree.
+ */
 public class SuffixTree {
     private Node root;
     private Node activeNode;
@@ -21,27 +25,11 @@ public class SuffixTree {
         //this.build(this.cleanText(fileName));
     }
 
-    public String cleanText(String fileName) {
-        String cleaned = "";
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String line = br.readLine();
-
-            while (line != null) {
-                line.replaceAll("", "");//TODO signo de puntuacion
-                line.replaceAll("", " ");//TODO espacios
-                cleaned += line;
-                line = br.readLine();
-            }
-        } catch (IOException e) {
-            System.out.println("fail");
-        } finally {
-            return cleaned;
-        }
-    }
-
-    private void insert(String s) {
+    /**
+     * Crea el suffix tree a partir de un string, utilizando el algoritmo de ukkonen.
+     * @param s el string que se quiere convertir.
+     */
+    public void insert(String s) {
         int count = 0;//count for values in the leaf.
         for (int i = 0; i < s.length(); i++) {
             remainder++;
@@ -98,17 +86,12 @@ public class SuffixTree {
         }
     }
 
-    /*private void printSuffixTree(int i, int remainder, int activelength, String u, int count) {
-        System.out.println("\n-------------------------------------------------------------------------\n");
-        System.out.println("i= "+ i);
-        System.out.println("remainder= " + remainder);
-        System.out.println("activeLength= " + activelength);
-        System.out.println("stringInserted= " + u);
-        System.out.println("count=" + count);
-        root.printear(0);
-    }
-    */
-
+    /**
+     * Regla 2 del algoritmo de creación de suffix tree. Crea un suffix link entre el nodo suffixLinkNode y
+     * un nodo n, en el caso que suffixLink node sea distinto de nulo. Al final, asigna al nodo n como el nuevo
+     * suffixLinkNode.
+     * @param n el nodo
+     */
     public void rule2(Node n){
         if (suffixLinkNode != null) {
             suffixLinkNode.setSuffixLink(n);
@@ -116,6 +99,11 @@ public class SuffixTree {
         suffixLinkNode = n;
     }
 
+    /**
+     * Implementación de la función count. Retorna la cantidad de ocurrencias del string s en el suffix tree
+     * @param s el string buscado
+     * @return la cantidad de ocurrencias
+     */
     public int count(String s) {
         int i = 0;
         Node currentNode = root;
@@ -136,6 +124,13 @@ public class SuffixTree {
         }
         return 0;
     }
+
+    /**
+     * Implementación de la función locate. Retorna la lista con las posiciones donde ocurre el string s
+     * en el suffix tree.
+     * @param s el string buscado
+     * @return la lista de posiciones donde ocurren el string s.
+     */
     public ArrayList<Integer> locate(String s){
         int i = 0;
         Node currentNode = root;
@@ -164,9 +159,13 @@ public class SuffixTree {
         return lista;
     }
 
-    //Retorna la lista con los k strings de largo q que ocurren más veces en
-    //T [1, n].
-    // q = largo del string
+    /**
+     * Implementación de top-k-q. Retorna la lista de los k strings de largo q que ocurren más veces
+     * en el suffix tree.
+     * @param k cantidad top de resultados
+     * @param q largo del string
+     * @return el arreglo con los k strings más largos.
+     */
     public ArrayList<String> topKQ(int k, int q){
 
         Stack<Pair<Node,String>> stack=new Stack<>();
@@ -207,35 +206,22 @@ public class SuffixTree {
     }
 
 
+    /**
+     * Devuelve el nodo root del suffix tree
+     * @return el nodo root
+     */
     public Node getRoot(){
         return root;
     }
 
     public static void main(String[] args) throws IOException {
         SuffixTree st = new SuffixTree("owo");
-        /*
-        String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCT" +
-                "AAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCA" +
-                "AGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAG" +
-                "CTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGAT" +
-                "TTGATCATTATGCATTATATACATGAATCAAAATATCACACATACCTTCAAACTATGTACAAATATTATATACCAATAAA" +
-                "AAATCATCATCATCATCTCCATCATCACCACCCTCCTCCTCATCACCACCAGCATCACCACCATCATCACCACCACCATC" +
-                "ATCACCACCACCACTGCCATCATCATCACCACCACTGTGCCATCATCATCACCACCACTGTCATTATCACCACCACCATC" +
-                "ATCACCAACACCACTGCCATCGTCATCACCACCACTGTCATTATCACCACCACCATCACCAACATCACCACCACCATTAT" +
-                "CACCACCATCAACACCACCACCCCCATCATCATCATCACTACTACCATCATTACCAGCACCACCACCACTATCACCACCA" +
-                "CCACCACAATCACCATCACCACTATCATCAACATCATCACTACCACCATCACCAACACCACCATCATTATCACCACCACC" +
-                "ACCATCACCAACATCACCACCATCATCATCACCACCATCACCAAGACCATCATCATCACCATCACCACCAACATCACCAC" +
-                "CATCACCAACACCACCATCACCACCACCACCACCATCATCACCACCACCACCATCATCATCACCACCACCGCCATCATCA" +
-                "TCGCCACCACCATGACCACCACCATCACAACCATCACCACCATCACAACCACCATCATCACTATCGCTATCACCACCATC" +
-                "ACCATTACCACCACCATTACTACAACCATGACCATCACCACCATCACCACCACCATCACAACGATCACCATCACAGCCAC" +
-                "CATCATCACCACCACCACCACCACCATCACCATCAAACCATCGGCATTATTATTTTTTTAGAATTTTGTTGGGATTCAGT" +
-                "ATCTGCCAAGATACCCATTCTTAAAACATGAAAAAGCAGCTGACCCTCCTGTGGCCCCCTTTTTGGGCAGTCATTGCAGG" +
-                "ACCTCATCCCCAAGCAGCAGCTCTGGTGGCATACAGGCAACCCACCACCAAGGTAGAGGGTAATTGAGCAGAAAAGCCAC" +
-                "TTCCTCCAGCAGTTCCCTGTCTGAGCTGCTGTCCTTGGACTTGAAGAAGCTTCTGGAACATGCTGGGGAGGAAGGAAGAC" +
-                "ATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCT" +
-                "ATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAAC" +
-                "ATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+
+        String uwu = "GATCAATGAGGTGGACACCAGAGGCGGGGACTTGTAAATAACACTGGGCTGTAGGAGTGATGGGGTTCACCTCTAATTCTAAGATGGCTAGATAATGCATCTTTCAGGGTTGTGCTTCTATCTAGAAGGTAGAGCTGTGGTCGTTCAATAAAAGTCCTCAAGAGGTTGGTTAATACGCATGTTTAATAGTACAGTATGGTGACTATAGTCAACAATAATTTATTGTACATTTTTAAATAGCTAGAAGAAAAGCATTGGGAAGTTTCCAACATGAAGAAAAGATAAATGGTCAAGGGAATGGATATCCTAATTACCCTGATTTGATCATTATGCATTATATACATGAATCAAAATATCACACATACCTTCAAACTATGTACAAATATTATATACCAATAAAAAATCATCATCATCATCTCCATCATCACCACCCTCCTCCTCATCACCACCAGCATCACCACCATCATCACCACCACCATCATCACCACCACCACTGCCATCATCATCACCACCACTGTGCCATCATCATCACCACCACTGTCATTATCACCACCACCATCATCACCAACACCACTGCCATCGTCATCACCACCACTGTCATTATCACCACCACCATCACCAACATCACCACCACCATTATCACCACCATCAACACCACCACCCCCATCATCATCATCACTACTACCATCATTACCAGCACCACCACCACTATCACCACCACCACCACAATCACCATCACCACTATCATCAACATCATCACTACCACCATCACCAACACCACCATCATTATCACCACCACCACCATCACCAACATCACCACCATCATCATCACCACCATCACCAAGACCATCATCATCACCATCACCACCAACATCACCACCATCACCAACACCACCATCACCACCACCACCACCATCATCACCACCACCACCATCATCATCACCACCACCGCCATCATCATCGCCACCACCATGACCACCACCATCACAACCATCACCACCATCACAACCACCATCATCACTATCGCTATCACCACCATCACCATTACCACCACCATTACTACAACCATGACCATCACCACCATCACCACCACCATCACAACGATCACCATCACAGCCACCATCATCACCACCACCACCACCACCATCACCATCAAACCATCGGCATTATTATTTTTTTAGAATTTTGTTGGGATTCAGTATCTGCCAAGATACCCATTCTTAAAACATGAAAAAGCAGCTGACCCTCCTGTGGCCCCCTTTTTGGGCAGTCATTGCAGGACCTCATCCCCAAGCAGCAGCTCTGGTGGCATACAGGCAACCCACCACCAAGGTAGAGGGTAATTGAGCAGAAAAGCCACTTCCTCCAGCAGTTCCCTGTCTGAGCTGCTGTCCTTGGACTTGAAGAAGCTTCTGGAACATGCTGGGGAGGAAGGAAGACATTTCACTTATTGAGTGGCCTGATGCAGAACAGAGACCCAGCTGGTTCACTCTAGTTCGGACTAAAACTCACCCCTGTCTATAAGCATCAGCCTCGGCAGGATGCATTTCACATTTGTGATCTCATTTAACCTCCACAAAGACCCAGAAGGGTTGGTAACATTATCATACCTAGGCCTACTATTTTAAAAATCTAACACCCATGCAGCCCGGGCACTGAAGTGGAGGCTGGCCACGGAGA$";// GATCAATGAGGTGGA // otro error GATCAATGAGGTGG string con problemas
+
         st.insert(uwu);
+        System.out.println(st.remainder);
+        System.out.println(st.count("A"));
         ArrayList<Integer> count = st.locate("AC");
         //st.root.printear(0);
         count.sort(Integer::compareTo);
@@ -249,33 +235,8 @@ public class SuffixTree {
                 owaso) {
             System.out.println(s);
         }
-        */
-
-
-        StringBuilder archivo = new StringBuilder();
-        BufferedReader bf=new BufferedReader(new FileReader("/home/emilio/2019-1/dna.50MB"));
-        String line=bf.readLine();
-        //Textito
-        while(line!=null){
-            archivo.append(line);
-
-            line=bf.readLine();
-        }
-        archivo.append("$");
-        String nosdfn = archivo.toString();
-        line.toLowerCase();
-        line.replaceAll(".", "");//TODO signo de puntuacion
-        line.replaceAll(",", "");//TODO espacios
-        line.replaceAll("\n", " ");//TODO espacios
-        line.replaceAll("\\s{2,}", " ");
-
-
-        st.insert(nosdfn);
-
-
-
-
-
+        System.out.println(st.remainder);
+        System.out.println(st.activelength);
     }
 
 

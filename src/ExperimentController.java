@@ -4,6 +4,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Clase con los experimentos realizados para la tarea
+ */
 public class ExperimentController {
     private String wholeString;
     private int seed;
@@ -190,13 +193,24 @@ public class ExperimentController {
     }
 
 
-
+    /**
+     * Funcion que realiza los experimentos del informe.
+     *
+     * En la ultima linea donde dice ec.Experiment, el primer parametro es el path al archivo
+     * que se quiere realizar el suffix tree, el segundo el path hacia donde se van a escribir
+     * los archivos y el último parametro si es que se trata del archivo de adn (se coloca true)
+     * y si es el archivo english (se coloca false).
+     * Los valores del for, se coloca desde i=10 hasta 23 para que genere los experimentos para los
+     * largos de 2^10 hasta 2^23
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         ExperimentController ec=new ExperimentController();
         int[] m = new int[]{8, 16, 32, 64};
         m=new int[]{10};
         for (int i = 10; i <23 ; i++) {
-            ec.Experiment("D:\\dcc\\2019-1\\loga\\datasets\\dna.50MB","D:\\dcc\\2019-1\\loga\\adn"+i+".txt",i,i+1,m,false);
+            ec.Experiment("/home/emilio/2019-1/englishText/english.50MB","/home/emilio/2019-1/results/english"+i+".txt",i,i+1,m,false);
 
         }
 
